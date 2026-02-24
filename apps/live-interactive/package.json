@@ -1,0 +1,25 @@
+{
+  "name": "live-interactive",
+  "version": "1.0.0",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node backend/src/server.js",
+    "build": "node scripts/build-check.js",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:status": "node scripts/db-status.js",
+    "db:query": "node scripts/db-query.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.17.4",
+    "qrcode": "^1.5.4"
+  }
+}

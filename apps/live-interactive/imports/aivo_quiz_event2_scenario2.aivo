@@ -1,0 +1,292 @@
+{
+  "format": "AIVO_QUIZ",
+  "version": 1,
+  "source": "AIVO",
+  "token": "AIVO_EXPORT_V1",
+  "createdAt": "2026-02-21T11:52:51.801Z",
+  "quiz": {
+    "title": "Свадебные вопросики",
+    "questions": [
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Розовый кабриолет",
+          "Посудомоечную",
+          "Белую BMW",
+          "Чёрную «Импалу»"
+        ],
+        "correctText": "",
+        "questionText": "Какую машину хочет Невеста?",
+        "correctOptionIndex": 2
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Машина",
+          "Шуба для жены",
+          "Кот",
+          "Фургон с мороженым"
+        ],
+        "correctText": "",
+        "questionText": "Первая покупка молодых после свадьбы?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Какая самая смешная привычка жениха?",
+        "correctOptionIndex": null
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Нежными обнимашками",
+          "Пением в душе",
+          "Шумом блендера",
+          "Жених будит себя сам"
+        ],
+        "correctText": "",
+        "questionText": "Как невеста будит своего мужа с утра?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Морковный фреш",
+          "Чёрный кофе",
+          "“Пивка для рывка”",
+          "Стакан рассола"
+        ],
+        "correctText": "",
+        "questionText": "Завтра утром невеста принесёт своему супругу в постель:",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Жених",
+          "Невеста",
+          "Оба",
+          "Никто (они идеальны)"
+        ],
+        "correctText": "",
+        "questionText": "Кто чаще говорит “я же говорил(а)”?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Одно слово, которое лучше всего описывает невесту:",
+        "correctOptionIndex": null
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Потому что его невеста — самая лучшая",
+          "Потому что она отлично готовит",
+          "Потому что зимой одному холодно",
+          "Невеста его приворожила"
+        ],
+        "correctText": "",
+        "questionText": "Почему жених решил жениться?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Жених",
+          "Невеста",
+          "Банковские карточки",
+          "Зачем копить, когда можно сразу всё потратить"
+        ],
+        "correctText": "",
+        "questionText": "Кто в семье лучше умеет копить деньги?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "В кино",
+          "В кафе",
+          "В ЗАГС",
+          "Домой к жениху"
+        ],
+        "correctText": "",
+        "questionText": "Куда пошли жених и невеста на первом свидании?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Куриные пальчики по-мексикански",
+          "Приправа из хрена “хренадёрчик”",
+          "Блины с джемом",
+          "“Алло, здравствуйте, это доставка пиццы”"
+        ],
+        "correctText": "",
+        "questionText": "Какое блюдо получается у невесты лучше всего?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Какая самая милая привычка невесты?",
+        "correctOptionIndex": null
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Красотой и грацией",
+          "Длинными и шелковистыми волосами",
+          "Деньгами и машиной",
+          "Чувством юмора"
+        ],
+        "correctText": "",
+        "questionText": "Чем жених покорил невесту?",
+        "correctOptionIndex": 1
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "“Носки — только в корзину!”",
+          "“Пульт — священный!”",
+          "“После 22:00 — чай и сериальчик”",
+          "“Сначала еда — потом разговоры”"
+        ],
+        "correctText": "",
+        "questionText": "Самое вероятное домашнее правило после свадьбы:",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Какую фразу чаще всего можно услышать у них дома?",
+        "correctOptionIndex": null
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Принцессой",
+          "Стюардессой",
+          "Женой миллионера",
+          "Поваром"
+        ],
+        "correctText": "",
+        "questionText": "Кем невеста мечтала стать в детстве?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Море и лежак",
+          "Горы и приключения",
+          "Город, музеи и кофе",
+          "Диван, плед и никуда не летим"
+        ],
+        "correctText": "",
+        "questionText": "Идеальный отпуск для молодых:",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Солидным и богатым",
+          "Здоровым и сильным",
+          "Весёлым и усатым",
+          "Умным и предусмотрительным"
+        ],
+        "correctText": "",
+        "questionText": "По мнению жениха, мужчина должен быть:",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Жених",
+          "Невеста",
+          "Доставка",
+          "Мама/бабушка спасают"
+        ],
+        "correctText": "",
+        "questionText": "Кто в паре главный по “вкусняшкам”?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "Жених",
+          "Невеста",
+          "Они опаздывают вместе",
+          "“Собираются” только словами"
+        ],
+        "correctText": "",
+        "questionText": "Кто быстрее собирается выходить из дома?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Что жених точно НЕ доверит невесте?",
+        "correctOptionIndex": null
+      },
+      {
+        "type": "SINGLE_CHOICE",
+        "options": [
+          "За поддержку",
+          "За терпение",
+          "За вкусную еду",
+          "За чувство юмора"
+        ],
+        "correctText": "",
+        "questionText": "За что молодожёны чаще всего благодарят друг друга?",
+        "correctOptionIndex": 0
+      },
+      {
+        "type": "TEXT",
+        "options": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "correctText": "Укажите ответ молодожёнов",
+        "questionText": "Какой самый вероятный “семейный мем” появится после свадьбы?",
+        "correctOptionIndex": null
+      }
+    ]
+  },
+  "metadata": {
+    "exporter": "live-interactive-dev-tool",
+    "origin": "event_manager.brief.answers.quizQuestions"
+  }
+}

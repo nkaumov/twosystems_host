@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUNA | Презентации</title>
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/presentations.css" />
+  </head>
+  <body>
+    <div class="container">
+      <section class="app-header-wrap" id="app-header-root"></section>
+
+      <section class="card actions-bar">
+        <!-- <p class="muted actions-title">Действия</p> -->
+        <button
+          id="open-create-modal"
+          class="btn btn-primary btn-icon"
+          type="button"
+          title="Создать презентацию"
+          aria-label="Создать презентацию"
+        >
+          <span class="material-icons" aria-hidden="true">add</span>
+        </button>
+      </section>
+
+      <div id="presentations-error" class="error-box" hidden></div>
+
+      <section class="card presentations-grid">
+        <h2>Презентации</h2>
+        <p id="presentations-empty" class="muted">Пока нет ни одной презентации.</p>
+        <ul id="presentations-list"></ul>
+      </section>
+    </div>
+
+    <div id="create-modal" class="modal" hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="card modal-card">
+        <div class="modal-head">
+          <h3>Новая презентация</h3>
+          <button
+            id="close-create-modal"
+            type="button"
+            class="btn btn-secondary btn-icon"
+            title="Закрыть"
+            aria-label="Закрыть"
+          >
+            <span class="material-icons" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <form id="create-presentation-form" class="modal-form">
+          <input
+            id="presentation-title"
+            class="input"
+            type="text"
+            maxlength="200"
+            placeholder="Название презентации"
+            required
+          />
+          <button
+            type="submit"
+            class="btn btn-primary btn-icon"
+            title="Создать"
+            aria-label="Создать"
+          >
+            <span class="material-icons" aria-hidden="true">check</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="delete-modal" class="modal" hidden>
+      <div class="modal-backdrop" data-close-delete-modal></div>
+      <div class="card modal-card">
+        <div class="modal-head">
+          <h3>Удаление мероприятия</h3>
+          <button
+            id="close-delete-modal"
+            type="button"
+            class="btn btn-secondary btn-icon"
+            title="Закрыть"
+            aria-label="Закрыть"
+          >
+            <span class="material-icons" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <p id="delete-modal-text" class="muted">
+          Вы действительно хотите удалить это мероприятие?
+        </p>
+        <div class="modal-actions">
+          <button
+            id="confirm-delete-presentation"
+            type="button"
+            class="btn btn-danger btn-icon"
+            title="Удалить"
+            aria-label="Удалить"
+          >
+            <span class="material-icons" aria-hidden="true">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/scripts/presentations/index.js?v=1"></script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+:root {
+  --motion-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 160ms;
+  --motion-medium: 240ms;
+  --motion-slow: 340ms;
+}
+
+.motion-popover {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  pointer-events: none;
+  transition:
+    opacity var(--motion-fast) var(--motion-ease-spring),
+    transform var(--motion-fast) var(--motion-ease-spring);
+}
+
+.motion-popover.is-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}

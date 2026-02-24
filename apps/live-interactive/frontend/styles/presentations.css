@@ -1,0 +1,136 @@
+.actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.1rem;
+  margin: 0.6rem 0 0;
+}
+
+.presentations-grid {
+  margin-top: 1rem;
+  padding: 1rem 1.2rem;
+}
+
+.actions-title {
+  margin: 0;
+}
+
+#presentations-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.presentation-card {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 0.8rem;
+  background: #fff;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.presentation-card:hover {
+  border-color: #a5c8b8;
+  transform: translateY(-1px);
+}
+
+.presentation-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.presentation-card p {
+  margin: 0.55rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.presentation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.presentation-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.modal[hidden] {
+  display: none !important;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 27, 20, 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.modal-card {
+  position: relative;
+  width: min(520px, 100%);
+  padding: 1rem;
+  z-index: 1;
+  animation: modalIn 180ms ease-out;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.modal-head h3 {
+  margin: 0;
+}
+
+.modal-form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.modal-form .input {
+  flex: 1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.7rem;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .actions-bar {
+    margin-top: 0.5rem;
+  }
+
+  .modal-form {
+    flex-direction: column;
+  }
+}
