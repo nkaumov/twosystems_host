@@ -88,7 +88,7 @@ function scheduleDraftSave() {
     try {
       await syncDraftToServer();
     } catch (error) {
-      showError(`РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ Р±Р»РѕРєРё РІ Р‘Р”: ${error.message}`);
+      showError(`Не удалось сохранить блоки в БД: ${error.message}`);
     } finally {
       saveInFlight = false;
       if (saveQueued) {
@@ -213,7 +213,7 @@ bootstrapEditor({
     saveEnabled = true;
     if (nonBlockingError && !saveDisabledReasonShown) {
       showError(
-        `Р‘Р»РѕРєРё Р‘Р” РЅРµРґРѕСЃС‚СѓРїРЅС‹ (${nonBlockingError}). Р РµРґР°РєС‚РѕСЂ СЂР°Р±РѕС‚Р°РµС‚ РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ.`
+        `Блоки БД недоступны (${nonBlockingError}). Редактор работает в локальном режиме.`
       );
       saveDisabledReasonShown = true;
     }

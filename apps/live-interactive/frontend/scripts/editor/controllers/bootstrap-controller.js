@@ -36,7 +36,7 @@ export async function bootstrapEditor({
 
   const presentationId = parsePresentationId();
   if (!presentationId) {
-    throw new Error("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїСЂРµР·РµРЅС‚Р°С†РёРё");
+    throw new Error("Некорректный идентификатор презентации");
   }
 
   const payload = await apiRequest(`/api/presentations/${presentationId}`);
@@ -56,7 +56,7 @@ export async function bootstrapEditor({
     remoteSelectedBlockId = blocksPayload?.selectedBlockId || null;
   } catch (error) {
     saveToDbAvailable = false;
-    nonBlockingError = error.message || "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ Р±Р»РѕРєРё РёР· Р‘Р”";
+    nonBlockingError = error.message || "Не удалось загрузить блоки из БД";
   }
 
   let shouldMigrateLocalDraft = false;

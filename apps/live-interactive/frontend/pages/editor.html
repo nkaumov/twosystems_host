@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LUNA | Р РµРґР°РєС‚РѕСЂ</title>
+    <title>LUNA | Редактор</title>
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/header.css" />
     <link rel="stylesheet" href="/styles/editor.css" />
@@ -18,18 +18,18 @@
             id="editor-back"
             type="button"
             class="btn btn-secondary btn-icon"
-            title="Рљ СЃРїРёСЃРєСѓ РїСЂРµР·РµРЅС‚Р°С†РёР№"
-            aria-label="Рљ СЃРїРёСЃРєСѓ РїСЂРµР·РµРЅС‚Р°С†РёР№"
+            title="К списку презентаций"
+            aria-label="К списку презентаций"
           >
             <span class="material-icons" aria-hidden="true">arrow_back</span>
           </button>
         </div>
-        <!-- <p class="muted actions-title">РќР°РІРёРіР°С†РёСЏ</p> -->
+        <!-- <p class="muted actions-title">Навигация</p> -->
       </section>
 
       <section class="card editor-shell">
         <header class="editor-head">
-          <h1 id="editor-title">Р РµРґР°РєС‚РѕСЂ</h1>
+          <h1 id="editor-title">Редактор</h1>
           <p id="editor-meta" class="muted"></p>
         </header>
 
@@ -39,8 +39,8 @@
               id="open-block-types"
               type="button"
               class="btn btn-secondary btn-icon"
-              title="Р”РѕР±Р°РІРёС‚СЊ Р±Р»РѕРє"
-              aria-label="Р”РѕР±Р°РІРёС‚СЊ Р±Р»РѕРє"
+              title="Добавить блок"
+              aria-label="Добавить блок"
             >
               <span class="material-icons" aria-hidden="true">add</span>
             </button>
@@ -49,32 +49,28 @@
               class="block-types-menu card motion-popover"
               hidden
             ></div>
-            <button
-              id="toggle-preview-top"
-              type="button"
-              class="btn btn-primary"
-            >
-              Р›Р°Р№РІ
+            <button id="toggle-preview-top" type="button" class="btn btn-primary">
+              Лайв
             </button>
           </div>
           <p class="muted editor-topbar-hint">
-            Р’С‹Р±РµСЂРёС‚Рµ РёР»Рё СЃРѕР·РґР°Р№С‚Рµ Р±Р»РѕРє РґР»СЏ РЅР°СЃС‚СЂРѕР№РєРё.
+            Выберите или создайте блок для настройки.
           </p>
         </section>
 
         <section id="editor-layout" class="editor-layout">
           <div class="editor-builder">
             <aside class="card blocks-panel">
-              <h2>Р‘Р»РѕРєРё</h2>
-              <p class="muted">РџРµСЂРµС‚Р°СЃРєРёРІР°Р№С‚Рµ Р±Р»РѕРєРё, С‡С‚РѕР±С‹ РјРµРЅСЏС‚СЊ РїРѕСЂСЏРґРѕРє.</p>
+              <h2>Блоки</h2>
+              <p class="muted">Перетаскивайте блоки, чтобы менять порядок.</p>
               <ul id="editor-blocks-list" class="blocks-list"></ul>
               <p id="editor-blocks-empty" class="muted blocks-empty">
-                РџРѕРєР° Р±Р»РѕРєРѕРІ РЅРµС‚.
+                Пока блоков нет.
               </p>
             </aside>
 
             <section class="card settings-panel">
-              <h2 id="settings-title">РќР°СЃС‚СЂРѕР№РєРё Р±Р»РѕРєР°</h2>
+              <h2 id="settings-title">Настройки блока</h2>
               <div id="editor-settings-content" class="settings-content"></div>
             </section>
 
@@ -82,10 +78,10 @@
               id="open-preview-side"
               type="button"
               class="btn btn-secondary preview-rail-btn"
-              title="РћС‚РєСЂС‹С‚СЊ РїСЂРµРґРїСЂРѕСЃРјРѕС‚СЂ"
-              aria-label="РћС‚РєСЂС‹С‚СЊ РїСЂРµРґРїСЂРѕСЃРјРѕС‚СЂ"
+              title="Открыть предпросмотр"
+              aria-label="Открыть предпросмотр"
             >
-              РџСЂРµРґРїСЂРѕСЃРјРѕС‚СЂ
+              Предпросмотр
             </button>
           </div>
 
@@ -98,17 +94,17 @@
               id="close-preview-side"
               type="button"
               class="btn btn-secondary preview-back-btn"
-              title="Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє СЂРµРґР°РєС‚РѕСЂСѓ"
-              aria-label="Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє СЂРµРґР°РєС‚РѕСЂСѓ"
+              title="Вернуться к редактору"
+              aria-label="Вернуться к редактору"
             >
-              Рљ СЂРµРґР°РєС‚РѕСЂСѓ
+              К редактору
             </button>
             <section class="preview-screen preview-tv">
-              <h3>РўР’</h3>
+              <h3>ТВ</h3>
               <div id="tv-preview-content" class="preview-content"></div>
             </section>
             <section class="preview-screen preview-guest">
-              <h3>Р“РѕСЃС‚СЊ</h3>
+              <h3>Гость</h3>
               <div id="guest-preview-content" class="preview-content"></div>
             </section>
           </aside>
@@ -118,20 +114,20 @@
           <div class="modal-backdrop" data-close-add-modal></div>
           <div class="card modal-card">
             <div class="modal-head">
-              <h3>Р”РѕР±Р°РІР»РµРЅРёРµ Р±Р»РѕРєР°</h3>
+              <h3>Добавление блока</h3>
               <button
                 id="close-add-modal"
                 type="button"
                 class="btn btn-secondary btn-icon"
-                title="Р—Р°РєСЂС‹С‚СЊ"
-                aria-label="Р—Р°РєСЂС‹С‚СЊ"
+                title="Закрыть"
+                aria-label="Закрыть"
               >
                 <span class="material-icons" aria-hidden="true">close</span>
               </button>
             </div>
             <form id="add-block-form" class="modal-form">
               <label class="modal-row">
-                <span>РўРёРї Р±Р»РѕРєР°</span>
+                <span>Тип блока</span>
                 <input
                   id="add-block-type-label"
                   class="input"
@@ -140,7 +136,7 @@
                 />
               </label>
               <label class="modal-row">
-                <span>РќР°Р·РІР°РЅРёРµ Р±Р»РѕРєР°</span>
+                <span>Название блока</span>
                 <input
                   id="add-block-title"
                   class="input"
@@ -150,7 +146,7 @@
                 />
               </label>
               <label class="modal-row">
-                <span>РћРїРёСЃР°РЅРёРµ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)</span>
+                <span>Описание (опционально)</span>
                 <textarea
                   id="add-block-note"
                   class="input"
@@ -159,7 +155,7 @@
                 ></textarea>
               </label>
               <button type="submit" class="btn btn-primary">
-                Р”РѕР±Р°РІРёС‚СЊ Р±Р»РѕРє
+                Добавить блок
               </button>
             </form>
           </div>
