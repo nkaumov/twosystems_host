@@ -1,4 +1,5 @@
 const presentationsRepository = require("./presentations.repository");
+const { validateAndExtractDbJsonParts } = require("../block-schemas/compile");
 
 function normalizePresentation(presentation) {
   return {
@@ -33,12 +34,24 @@ function normalizePresentationBlockRow(row) {
   const contentJson = toObject(row.content_json, {});
   const configJson = toObject(row.config_json, {});
   const appearanceJson = toObject(row.appearance_json, {});
+  const parsedSchemaVersion = Number(contentJson?.schemaVersion);
+  const parsedTypeVersion = Number(contentJson?.typeVersion);
+  const schemaVersion =
+    Number.isInteger(parsedSchemaVersion) && parsedSchemaVersion > 0
+      ? parsedSchemaVersion
+      : 1;
+  const typeVersion =
+    Number.isInteger(parsedTypeVersion) && parsedTypeVersion > 0
+      ? parsedTypeVersion
+      : 1;
 
   return {
     id: `db_${row.id}`,
     type: row.block_type,
     title: row.title,
     note: String(contentJson?.note || ""),
+    schemaVersion,
+    typeVersion,
     createdAt: row.created_at,
     settings: {
       main:
@@ -62,53 +75,27 @@ function normalizePresentationBlockRow(row) {
 }
 
 function normalizeInputBlock(rawBlock) {
-  const type = String(rawBlock?.type || "").trim();
-  if (!["flex", "quiz", "poll", "raffle"].includes(type)) {
-    const error = new Error("Обнаружен неподдерживаемый тип блока");
-    error.statusCode = 400;
-    throw error;
-  }
+  const { normalized, dbJson } = validateAndExtractDbJsonParts(rawBlock);
+  const type = String(normalized.type || "").trim();
+  const title = String(normalized.title || "").trim();
 
-  const title = String(rawBlock?.title || "").trim();
   if (!title) {
-    const error = new Error("Название блока обязательно");
+    const error = new Error("Название блока обязательно.");
     error.statusCode = 400;
     throw error;
   }
   if (title.length > 200) {
-    const error = new Error("Название блока слишком длинное");
+    const error = new Error("Название блока слишком длинное.");
     error.statusCode = 400;
     throw error;
   }
 
-  const note = String(rawBlock?.note || "").trim().slice(0, 800);
-  const settings =
-    rawBlock?.settings && typeof rawBlock.settings === "object" && !Array.isArray(rawBlock.settings)
-      ? rawBlock.settings
-      : {};
-
   return {
     blockType: type,
     title,
-    contentJson: JSON.stringify({
-      note,
-      content:
-        settings.content && typeof settings.content === "object"
-          ? settings.content
-          : {}
-    }),
-    configJson: JSON.stringify({
-      main: settings.main && typeof settings.main === "object" ? settings.main : {},
-      additional:
-        settings.additional && typeof settings.additional === "object"
-          ? settings.additional
-          : {}
-    }),
-    appearanceJson: JSON.stringify(
-      settings.appearance && typeof settings.appearance === "object"
-        ? settings.appearance
-        : {}
-    )
+    contentJson: dbJson.contentJson,
+    configJson: dbJson.configJson,
+    appearanceJson: dbJson.appearanceJson
   };
 }
 
@@ -188,7 +175,19 @@ async function replaceBlocksForPresentation({ presentationId, userId, blocks }) 
     throw error;
   }
 
-  const normalizedBlocks = blocks.map(normalizeInputBlock);
+  const normalizedBlocks = blocks.map((block, index) => {
+    try {
+      return normalizeInputBlock(block);
+    } catch (error) {
+      const wrapped = error instanceof Error ? error : new Error("Некорректные данные блока.");
+      if (!wrapped.statusCode) {
+        wrapped.statusCode = 400;
+      }
+      wrapped.message = `Блок #${index + 1}: ${wrapped.message}`;
+      throw wrapped;
+    }
+  });
+
   const success = await presentationsRepository.replaceBlocksForPresentation({
     presentationId,
     userId,
