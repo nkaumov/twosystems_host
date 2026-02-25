@@ -1,0 +1,82 @@
+.live-controls {
+  margin-top: 0.7rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.live-grid {
+  margin-top: 0.8rem;
+  padding: 1rem;
+}
+
+.live-grid h2 {
+  margin: 0 0 0.7rem;
+}
+
+.live-links p {
+  margin: 0.45rem 0;
+}
+
+.live-links a {
+  color: var(--brand-2);
+  word-break: break-all;
+}
+
+.live-snapshot {
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fbf9;
+  min-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.live-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.live-block-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  background: #fbfdfc;
+}
+
+.live-block-row.is-on-air {
+  border-color: #6b9f87;
+  background: #ecf7f1;
+}
+
+.live-block-label {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.live-quiz-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .live-controls {
+    flex-wrap: wrap;
+  }
+
+  .live-block-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

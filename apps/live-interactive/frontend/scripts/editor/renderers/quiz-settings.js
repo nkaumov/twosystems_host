@@ -9,7 +9,7 @@ import {
 function createQuizImportInput() {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "application/json,.json,.aivo";
+  input.accept = "application/json";
   input.hidden = true;
   input.dataset.quizImportInput = "1";
   return input;
@@ -161,8 +161,8 @@ function createQuizEmptyState() {
   const importButton = document.createElement("button");
   importButton.type = "button";
   importButton.className = "btn btn-secondary";
-  importButton.dataset.quizAction = "import-aivo";
-  importButton.textContent = "Импортировать файл викторины из AIVO";
+  importButton.dataset.quizAction = "import-json";
+  importButton.textContent = "\u0418\u043c\u043f\u043e\u0440\u0442 JSON";
 
   actions.appendChild(createButton);
   actions.appendChild(importButton);
@@ -206,8 +206,8 @@ function createQuizSummary(quiz) {
   const importButton = document.createElement("button");
   importButton.type = "button";
   importButton.className = "btn btn-secondary";
-  importButton.dataset.quizAction = "import-aivo";
-  importButton.textContent = "Импортировать из AIVO";
+  importButton.dataset.quizAction = "import-json";
+  importButton.textContent = "\u0418\u043c\u043f\u043e\u0440\u0442 JSON";
   actions.appendChild(importButton);
 
   const clearButton = document.createElement("button");

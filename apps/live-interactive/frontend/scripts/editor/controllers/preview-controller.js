@@ -88,7 +88,9 @@ export function createPreviewController({
   }
 
   function bind() {
-    togglePreviewTopButton.addEventListener("click", toggle);
+    if (togglePreviewTopButton) {
+      togglePreviewTopButton.addEventListener("click", toggle);
+    }
     openPreviewSideButton.addEventListener("click", open);
     closePreviewSideButton.addEventListener("click", close);
     previewNode.addEventListener("click", handlePreviewActionClick);

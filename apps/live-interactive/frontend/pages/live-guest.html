@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUNA | Guest Live</title>
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/live-screen.css" />
+  </head>
+  <body>
+    <main class="live-screen">
+      <h1>Guest</h1>
+      <p id="screen-status" class="muted">Подключение...</p>
+      <div id="screen-error" class="error-box" hidden></div>
+      <section id="guest-join" class="live-screen-card">
+        <label for="guest-name-input">Ваше имя</label>
+        <div class="live-screen-row">
+          <input id="guest-name-input" class="input" type="text" maxlength="120" placeholder="Введите имя" />
+          <button id="guest-join-button" class="btn btn-primary" type="button">Войти</button>
+        </div>
+        <p id="guest-join-status" class="muted">Введите имя и подключитесь к сессии.</p>
+      </section>
+      <section id="guest-interactive" class="live-screen-card" hidden>
+        <h2>Интерактив</h2>
+        <div id="guest-interactive-content"></div>
+        <p id="guest-action-status" class="muted"></p>
+      </section>
+      <section id="screen-main" class="live-screen-card">Ожидание данных...</section>
+    </main>
+
+    <script type="module" src="/scripts/live/guest.js?v=2"></script>
+  </body>
+</html>

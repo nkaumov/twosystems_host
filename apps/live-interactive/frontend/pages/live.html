@@ -1,0 +1,68 @@
+﻿<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUNA | Live</title>
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/header.css" />
+    <link rel="stylesheet" href="/styles/live.css" />
+  </head>
+  <body>
+    <div class="container">
+      <section class="app-header-wrap" id="app-header-root"></section>
+
+      <section class="card live-controls">
+        <button
+          id="live-back-editor"
+          type="button"
+          class="btn btn-secondary btn-icon"
+          title="К редактору"
+          aria-label="К редактору"
+        >
+          <span class="material-icons" aria-hidden="true">arrow_back</span>
+        </button>
+        <button id="live-start-button" type="button" class="btn btn-primary">Стартовать Live</button>
+        <span id="live-sse-status" class="muted">SSE: Отключено</span>
+      </section>
+
+      <div id="live-error" class="error-box" hidden></div>
+
+      <section class="card live-grid">
+        <h2>Ссылки подключения</h2>
+        <div class="live-links">
+          <p><strong>TV:</strong> <a id="live-tv-url" href="#" target="_blank" rel="noopener">—</a></p>
+          <p><strong>Guest:</strong> <a id="live-guest-url" href="#" target="_blank" rel="noopener">—</a></p>
+        </div>
+      </section>
+
+      <section class="card live-grid">
+        <h2>Блоки</h2>
+        <div id="live-blocks" class="live-blocks"></div>
+      </section>
+
+      <section class="card live-grid">
+        <h2>Quiz control</h2>
+        <div class="live-quiz-controls">
+          <button id="quiz-prev" type="button" class="btn btn-secondary">Prev</button>
+          <button id="quiz-next" type="button" class="btn btn-secondary">Next</button>
+          <span id="quiz-index" class="muted">Вопрос: —</span>
+        </div>
+      </section>
+
+      <section class="card live-grid">
+        <h2>Текущий on-air</h2>
+        <pre id="live-on-air" class="live-snapshot">Ожидание on-air...</pre>
+        <h2>Агрегаты on-air</h2>
+        <pre id="live-on-air-stats" class="live-snapshot">Ожидание статистики...</pre>
+      </section>
+
+      <section class="card live-grid">
+        <h2>Snapshot</h2>
+        <pre id="live-snapshot" class="live-snapshot">Ожидание snapshot...</pre>
+      </section>
+    </div>
+
+    <script type="module" src="/scripts/live/index.js?v=2"></script>
+  </body>
+</html>

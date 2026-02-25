@@ -52,6 +52,16 @@
   margin: 0;
 }
 
+.editor-dirty-indicator {
+  color: #cb6b2f;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.editor-save-status {
+  font-size: 0.82rem;
+}
+
 .block-types-menu {
   position: absolute;
   top: calc(100% + 0.4rem);

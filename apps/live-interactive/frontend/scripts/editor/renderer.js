@@ -171,9 +171,11 @@ export function renderPreviewPanel({
   const quizNavNode = previewNode.querySelector("[data-preview-quiz-nav='1']");
   quizNavNode?.remove();
 
-  togglePreviewTopButton.textContent = state.isPreviewOpen ? "Редактор" : "Предпросмотр";
-  togglePreviewTopButton.classList.toggle("btn-primary", !state.isPreviewOpen);
-  togglePreviewTopButton.classList.toggle("btn-secondary", state.isPreviewOpen);
+  if (togglePreviewTopButton) {
+    togglePreviewTopButton.textContent = state.isPreviewOpen ? "Редактор" : "Предпросмотр";
+    togglePreviewTopButton.classList.toggle("btn-primary", !state.isPreviewOpen);
+    togglePreviewTopButton.classList.toggle("btn-secondary", state.isPreviewOpen);
+  }
 
   const selectedBlock = getSelectedBlock();
   tvNode.innerHTML = "";

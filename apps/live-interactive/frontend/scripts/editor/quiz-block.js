@@ -1,3 +1,5 @@
+import { normalizeQuizContentV1 } from "./schemas/quiz.v1.js";
+
 const DEFAULT_BG_COLOR = "#ffffff";
 const DEFAULT_GRADIENT_COLOR = "#d7ede1";
 const DEFAULT_QR_SIZE = 22;
@@ -5,6 +7,7 @@ const DEFAULT_CONNECTION_QR_SIZE = 36;
 const DEFAULT_PREVIEW_QUESTION_INDEX = 0;
 const DEFAULT_CHOICE_ANSWERS_VIEW = "chart";
 const DEFAULT_TEXT_ANSWERS_VIEW = "cloud";
+const DEFAULT_TEXT_SCORING_THRESHOLD = 0.75;
 const QUIZ_QUESTION_TYPE_SINGLE = "SINGLE_CHOICE";
 const QUIZ_QUESTION_TYPE_TEXT = "TEXT";
 
@@ -101,9 +104,27 @@ function normalizePosition(value, fallback) {
 }
 
 function normalizeQuestionType(value, fallback = QUIZ_QUESTION_TYPE_SINGLE) {
-  const type = String(value || "").trim();
-  if (type === QUIZ_QUESTION_TYPE_SINGLE || type === QUIZ_QUESTION_TYPE_TEXT) {
-    return type;
+  const raw = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (raw === QUIZ_QUESTION_TYPE_SINGLE.toLowerCase() || raw === "choice") {
+    return QUIZ_QUESTION_TYPE_SINGLE;
+  }
+  if (raw === QUIZ_QUESTION_TYPE_TEXT.toLowerCase() || raw === "text") {
+    return QUIZ_QUESTION_TYPE_TEXT;
+  }
+  return fallback;
+}
+
+function normalizeQuestionKind(value, fallback = "choice") {
+  const raw = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (raw === "text") {
+    return "text";
+  }
+  if (raw === "choice") {
+    return "choice";
   }
   return fallback;
 }
@@ -133,14 +154,75 @@ function normalizeOptions(rawOptions) {
   return normalized;
 }
 
-function normalizeQuestion(rawQuestion) {
-  const type = normalizeQuestionType(rawQuestion?.type, QUIZ_QUESTION_TYPE_SINGLE);
+function normalizeAcceptedAnswers(rawAcceptedAnswers, rawCorrectText = "") {
+  if (Array.isArray(rawAcceptedAnswers)) {
+    return rawAcceptedAnswers.map((item) => String(item || "").trim()).filter(Boolean);
+  }
+  if (typeof rawAcceptedAnswers === "string") {
+    return rawAcceptedAnswers
+      .split(",")
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  }
+  const fallback = String(rawCorrectText || "").trim();
+  return fallback ? [fallback] : [];
+}
+
+function normalizeScoring(rawScoring) {
+  const thresholdRaw = Number(rawScoring?.threshold);
+  const threshold = Number.isFinite(thresholdRaw)
+    ? Math.max(0, Math.min(1, thresholdRaw))
+    : DEFAULT_TEXT_SCORING_THRESHOLD;
   return {
-    type,
+    mode: "threshold",
+    threshold
+  };
+}
+
+function normalizeQuestion(rawQuestion) {
+  const kind = normalizeQuestionKind(rawQuestion?.kind);
+  const type = normalizeQuestionType(rawQuestion?.type || kind, QUIZ_QUESTION_TYPE_SINGLE);
+  const options = normalizeOptions(rawQuestion?.options || rawQuestion?.choices);
+  const acceptedAnswers = normalizeAcceptedAnswers(
+    rawQuestion?.acceptedAnswers,
+    rawQuestion?.correctText
+  );
+  const scoring = normalizeScoring(rawQuestion?.scoring);
+  const correctTextFallback = normalizeQuestionText(rawQuestion?.correctText);
+  const normalizedTextAnswer = acceptedAnswers[0] || correctTextFallback;
+
+  if (type === QUIZ_QUESTION_TYPE_TEXT) {
+    const textAnswers = acceptedAnswers.length
+      ? acceptedAnswers
+      : normalizeAcceptedAnswers(null, normalizedTextAnswer);
+    return {
+      type: QUIZ_QUESTION_TYPE_TEXT,
+      kind: "text",
+      questionText: normalizeQuestionText(rawQuestion?.questionText),
+      options,
+      choices: options,
+      correctOptionIndex: null,
+      correctIndex: null,
+      acceptedAnswers: textAnswers,
+      scoring,
+      correctText: textAnswers[0] || ""
+    };
+  }
+
+  const correctOptionIndex = normalizeCorrectOptionIndex(
+    rawQuestion?.correctOptionIndex ?? rawQuestion?.correctIndex
+  );
+  return {
+    type: QUIZ_QUESTION_TYPE_SINGLE,
+    kind: "choice",
     questionText: normalizeQuestionText(rawQuestion?.questionText),
-    options: normalizeOptions(rawQuestion?.options),
-    correctOptionIndex: normalizeCorrectOptionIndex(rawQuestion?.correctOptionIndex),
-    correctText: normalizeQuestionText(rawQuestion?.correctText)
+    options,
+    choices: options,
+    correctOptionIndex,
+    correctIndex: correctOptionIndex,
+    acceptedAnswers: [],
+    scoring,
+    correctText: normalizedTextAnswer
   };
 }
 
@@ -151,12 +233,28 @@ function normalizeQuestions(rawQuestions) {
   return rawQuestions.map(normalizeQuestion);
 }
 
+function normalizeQuizDocument(rawQuiz) {
+  const base = normalizeQuizContentV1(rawQuiz);
+  return {
+    title: String(base?.title || "").trim(),
+    questions: normalizeQuestions(base?.questions)
+  };
+}
+
 export function createDefaultQuizQuestion() {
   return {
     type: QUIZ_QUESTION_TYPE_SINGLE,
+    kind: "choice",
     questionText: "",
     options: ["", "", "", ""],
+    choices: ["", "", "", ""],
     correctOptionIndex: 0,
+    correctIndex: 0,
+    acceptedAnswers: [],
+    scoring: {
+      mode: "threshold",
+      threshold: DEFAULT_TEXT_SCORING_THRESHOLD
+    },
     correctText: ""
   };
 }
@@ -208,10 +306,7 @@ export function normalizeQuizSettings(rawSettings) {
   const rawQuiz = rawSettings?.content?.quiz;
   const normalizedQuiz =
     rawQuiz && typeof rawQuiz === "object" && !Array.isArray(rawQuiz)
-      ? {
-          title: String(rawQuiz.title || "").trim(),
-          questions: normalizeQuestions(rawQuiz.questions)
-        }
+      ? normalizeQuizDocument(rawQuiz)
       : null;
   const connectionPageEnabled = normalizeBoolean(
     rawAdditional?.connectionPage?.enabled,

@@ -3,6 +3,7 @@
   createDefaultQuizQuestion
 } from "../quiz-block.js";
 import { applyPositionPickerState, clamp, getPositionIdByRatios } from "../positioning.js";
+import { normalizeQuizContentV1, normalizeQuizQuestionV1 } from "../schemas/quiz.v1.js";
 import {
   getSelectedBlock,
   updateSelectedBlock,
@@ -254,7 +255,7 @@ function parseJsonWithAutoFix(text, { isAivoFile = false } = {}) {
   }
 }
 
-async function parseImportedFileJson(file, { isAivoFile = false } = {}) {
+async function parseImportedFileJson(file) {
   const buffer = await file.arrayBuffer();
   const decoders = ["utf-8", "windows-1251", "utf-16le", "utf-16be"];
   let lastError = null;
@@ -262,13 +263,109 @@ async function parseImportedFileJson(file, { isAivoFile = false } = {}) {
   for (const encoding of decoders) {
     try {
       const text = new TextDecoder(encoding).decode(buffer);
-      return parseJsonWithAutoFix(text, { isAivoFile });
+      return parseJsonWithAutoFix(text, { isAivoFile: false });
     } catch (error) {
       lastError = error;
     }
   }
 
   throw lastError || new Error("Не удалось прочитать файл.");
+}
+
+function normalizeQuizOptionsForEditor(rawOptions) {
+  const options = Array.isArray(rawOptions) ? rawOptions.map((item) => String(item || "").trim()) : [];
+  while (options.length < 4) {
+    options.push("");
+  }
+  return options.slice(0, 4);
+}
+
+function normalizeImportedQuestionForEditor(rawQuestion, index) {
+  const normalizedQuestion = normalizeQuizQuestionV1(rawQuestion, index);
+  const rawType = String(normalizedQuestion.kind || normalizedQuestion.type || "")
+    .trim()
+    .toLowerCase();
+  const isTextQuestion = rawType === "text";
+  const options = normalizeQuizOptionsForEditor(normalizedQuestion.options || normalizedQuestion.choices);
+  const acceptedAnswers = Array.isArray(normalizedQuestion.acceptedAnswers)
+    ? normalizedQuestion.acceptedAnswers.map((item) => String(item || "").trim()).filter(Boolean)
+    : [];
+  const thresholdRaw = Number(normalizedQuestion?.scoring?.threshold);
+  const threshold = Number.isFinite(thresholdRaw) ? Math.max(0, Math.min(1, thresholdRaw)) : 0.75;
+  const normalizedCorrectIndex = Number(normalizedQuestion.correctOptionIndex ?? normalizedQuestion.correctIndex);
+  const correctOptionIndex = isTextQuestion
+    ? null
+    : Number.isFinite(normalizedCorrectIndex)
+      ? Math.max(0, Math.min(3, Math.round(normalizedCorrectIndex)))
+      : 0;
+  const correctText = acceptedAnswers[0] || String(normalizedQuestion.correctText || "").trim();
+
+  return {
+    type: isTextQuestion ? "TEXT" : "SINGLE_CHOICE",
+    kind: isTextQuestion ? "text" : "choice",
+    questionText: String(normalizedQuestion.questionText || "").trim(),
+    options,
+    choices: options,
+    correctOptionIndex,
+    correctIndex: correctOptionIndex,
+    correctText,
+    acceptedAnswers,
+    scoring: {
+      mode: "threshold",
+      threshold
+    }
+  };
+}
+
+function extractQuizImportSource(payload) {
+  if (Array.isArray(payload)) {
+    return {
+      title: "",
+      questions: payload
+    };
+  }
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Импорт невозможен: JSON должен быть объектом или массивом вопросов.");
+  }
+  if (payload?.settings?.content?.quiz && typeof payload.settings.content.quiz === "object") {
+    return payload.settings.content.quiz;
+  }
+  if (payload?.content?.quiz && typeof payload.content.quiz === "object") {
+    return payload.content.quiz;
+  }
+  if (payload?.quiz && typeof payload.quiz === "object") {
+    return payload.quiz;
+  }
+  if (Array.isArray(payload?.questions)) {
+    return payload;
+  }
+  if (Array.isArray(payload?.quizQuestions)) {
+    return {
+      title: String(payload.title || payload.quizTitle || "").trim(),
+      questions: payload.quizQuestions
+    };
+  }
+  throw new Error("Импорт невозможен: не найден массив вопросов (questions).");
+}
+
+function buildNormalizedQuizContentFromImport(payload) {
+  const sourceQuiz = extractQuizImportSource(payload);
+  const normalizedQuiz = normalizeQuizContentV1(sourceQuiz);
+  if (!Array.isArray(normalizedQuiz.questions)) {
+    throw new Error("Импорт невозможен: вопросы викторины должны быть массивом.");
+  }
+
+  const questions = normalizedQuiz.questions.map((question, index) =>
+    normalizeImportedQuestionForEditor(question, index)
+  );
+
+  return {
+    quiz: {
+      title: String(normalizedQuiz.title || "").trim(),
+      questions
+    },
+    previewQuestionIndex: 0
+  };
 }
 
 export function createSettingsController({
@@ -430,6 +527,26 @@ export function createSettingsController({
     return true;
   }
 
+  function setQuizContentValue(
+    nextContent,
+    { rerenderAll = false, reopenEditorAfterRerender = false } = {}
+  ) {
+    const selectedBlock = getSelectedBlock();
+    if (!selectedBlock || selectedBlock.type !== "quiz") {
+      return false;
+    }
+
+    const safeContent =
+      nextContent && typeof nextContent === "object" && !Array.isArray(nextContent)
+        ? nextContent
+        : { quiz: null, previewQuestionIndex: 0 };
+
+    const nextSettings = cloneDeep(selectedBlock.settings);
+    nextSettings.content = safeContent;
+    applySettingsUpdate(nextSettings, { rerenderAll, reopenEditorAfterRerender });
+    return true;
+  }
+
   function updateQuiz(mutator, { rerenderAll = false, reopenEditorAfterRerender = false } = {}) {
     const selectedBlock = getSelectedBlock();
     if (!selectedBlock || selectedBlock.type !== "quiz") {
@@ -520,16 +637,20 @@ export function createSettingsController({
       throw new Error("Файл слишком большой. Ограничение 4 МБ.");
     }
 
-    const isAivoFile = /\.aivo$/i.test(String(file.name || ""));
+    const declaredType = String(file.type || "").trim().toLowerCase();
+    if (declaredType && declaredType !== "application/json") {
+      throw new Error("Поддерживается только JSON-файл (application/json).");
+    }
+
     let parsed;
     try {
-      parsed = await parseImportedFileJson(file, { isAivoFile });
+      parsed = await parseImportedFileJson(file);
     } catch {
       throw new Error("Не удалось прочитать JSON. Проверьте формат файла.");
     }
 
-    const importedQuiz = buildQuizFromImportedPayload(parsed, { isAivoFile });
-    setQuizValue(importedQuiz, { rerenderAll: true });
+    const normalizedImportedContent = buildNormalizedQuizContentFromImport(parsed);
+    setQuizContentValue(normalizedImportedContent, { rerenderAll: true });
   }
 
   function handleQuizActionClick(event) {
@@ -567,7 +688,7 @@ export function createSettingsController({
       return true;
     }
 
-    if (action === "import-aivo") {
+    if (action === "import-json") {
       const importInput = settingsContentNode.querySelector("[data-quiz-import-input='1']");
       if (!importInput) {
         showError("Не удалось открыть выбор файла для импорта.");
@@ -927,4 +1048,3 @@ export function createSettingsController({
     syncToggleDependentSections
   };
 }
-

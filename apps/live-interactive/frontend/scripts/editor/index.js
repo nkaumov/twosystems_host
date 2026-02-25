@@ -29,7 +29,10 @@ const previewNode = document.getElementById("editor-preview");
 
 const openBlockTypesButton = document.getElementById("open-block-types");
 const blockTypesMenuNode = document.getElementById("block-types-menu");
-const togglePreviewTopButton = document.getElementById("toggle-preview-top");
+const liveButtonNode = document.getElementById("editor-live");
+const saveButtonNode = document.getElementById("editor-save");
+const dirtyIndicatorNode = document.getElementById("editor-dirty-indicator");
+const saveStatusNode = document.getElementById("editor-save-status");
 const openPreviewSideButton = document.getElementById("open-preview-side");
 const closePreviewSideButton = document.getElementById("close-preview-side");
 
@@ -40,11 +43,13 @@ const addBlockTitle = document.getElementById("add-block-title");
 const addBlockNote = document.getElementById("add-block-note");
 const closeAddModalButton = document.getElementById("close-add-modal");
 const addModalBackdrop = addBlockModalNode.querySelector("[data-close-add-modal]");
-let saveTimer = null;
 let saveInFlight = false;
-let saveQueued = false;
-let saveEnabled = true;
+let saveToDbAvailable = true;
 let saveDisabledReasonShown = false;
+let isDirty = false;
+let dirtyTrackingEnabled = false;
+let saveStatusTimer = null;
+let changedWhileSaving = false;
 
 function showError(message) {
   errorNode.textContent = message;
@@ -70,33 +75,131 @@ async function syncDraftToServer() {
   });
 }
 
-function scheduleDraftSave() {
-  if (!saveEnabled) {
+function clearSaveStatus() {
+  if (!saveStatusNode) {
     return;
   }
-  if (saveTimer) {
-    window.clearTimeout(saveTimer);
+  if (saveStatusTimer) {
+    window.clearTimeout(saveStatusTimer);
+    saveStatusTimer = null;
   }
-  saveTimer = window.setTimeout(async () => {
-    if (saveInFlight) {
-      saveQueued = true;
-      return;
-    }
+  saveStatusNode.hidden = true;
+  saveStatusNode.textContent = "";
+}
 
-    saveInFlight = true;
-    clearError();
-    try {
-      await syncDraftToServer();
-    } catch (error) {
-      showError(`Не удалось сохранить блоки в БД: ${error.message}`);
-    } finally {
-      saveInFlight = false;
-      if (saveQueued) {
-        saveQueued = false;
-        scheduleDraftSave();
-      }
+function showSaveStatus(message, { timeoutMs = 0 } = {}) {
+  if (!saveStatusNode) {
+    return;
+  }
+  if (saveStatusTimer) {
+    window.clearTimeout(saveStatusTimer);
+    saveStatusTimer = null;
+  }
+  saveStatusNode.hidden = false;
+  saveStatusNode.textContent = message;
+  if (timeoutMs > 0) {
+    saveStatusTimer = window.setTimeout(() => {
+      clearSaveStatus();
+    }, timeoutMs);
+  }
+}
+
+function renderSaveControls() {
+  if (dirtyIndicatorNode) {
+    dirtyIndicatorNode.hidden = !isDirty;
+  }
+  if (saveButtonNode) {
+    saveButtonNode.disabled = saveInFlight || !saveToDbAvailable || !isDirty;
+  }
+}
+
+function setDirty(nextValue) {
+  isDirty = Boolean(nextValue);
+  renderSaveControls();
+}
+
+async function saveToDatabase() {
+  if (!saveToDbAvailable) {
+    showError("Сохранение в БД недоступно.");
+    return;
+  }
+  if (!isDirty || saveInFlight) {
+    return;
+  }
+
+  saveInFlight = true;
+  changedWhileSaving = false;
+  renderSaveControls();
+  clearError();
+  clearSaveStatus();
+  try {
+    await syncDraftToServer();
+    if (changedWhileSaving) {
+      setDirty(true);
+      showSaveStatus("Сохранено. Есть новые изменения.", { timeoutMs: 1800 });
+    } else {
+      setDirty(false);
+      showSaveStatus("Сохранено", { timeoutMs: 1600 });
     }
-  }, 450);
+  } catch (error) {
+    showError(`Не удалось сохранить блоки в БД: ${error.message}`);
+  } finally {
+    saveInFlight = false;
+    renderSaveControls();
+  }
+}
+
+function resolveLiveUrl() {
+  const explicitUrl = String(liveButtonNode?.dataset?.liveUrl || "").trim();
+  if (explicitUrl) {
+    return explicitUrl;
+  }
+  const presentationId = getPresentationId();
+  if (!presentationId) {
+    return "";
+  }
+  return `/presentations/${presentationId}/live`;
+}
+
+function navigateToLive() {
+  const liveUrl = resolveLiveUrl();
+  if (!liveUrl) {
+    showError("Не удалось определить маршрут Live.");
+    return;
+  }
+  window.location.href = liveUrl;
+}
+
+async function handleStartLiveClick(event) {
+  event?.preventDefault();
+
+  if (saveInFlight) {
+    showSaveStatus("Сначала дождитесь сохранения.", { timeoutMs: 1700 });
+    return;
+  }
+
+  if (!saveToDbAvailable) {
+    showError("Live недоступен в локальном режиме. Подключите БД и сохраните презентацию.");
+    return;
+  }
+
+  if (!isDirty) {
+    navigateToLive();
+    return;
+  }
+
+  const shouldSaveAndLaunch = window.confirm(
+    "Есть несохранённые изменения. Сохранить и запустить?"
+  );
+  if (!shouldSaveAndLaunch) {
+    return;
+  }
+
+  await saveToDatabase();
+  if (isDirty) {
+    return;
+  }
+  navigateToLive();
 }
 
 const previewController = createPreviewController({
@@ -104,7 +207,7 @@ const previewController = createPreviewController({
   previewNode,
   tvNode: tvPreviewNode,
   guestNode: guestPreviewNode,
-  togglePreviewTopButton,
+  togglePreviewTopButton: null,
   openPreviewSideButton,
   closePreviewSideButton
 });
@@ -177,8 +280,22 @@ settingsController.bind();
 previewController.bind();
 addBlockController.bind();
 blocksController.bind();
+saveButtonNode?.addEventListener("click", () => {
+  saveToDatabase();
+});
+liveButtonNode?.addEventListener("click", (event) => {
+  handleStartLiveClick(event);
+});
+renderSaveControls();
 subscribeStateChanges(() => {
-  scheduleDraftSave();
+  if (!dirtyTrackingEnabled) {
+    return;
+  }
+  if (saveInFlight) {
+    changedWhileSaving = true;
+  }
+  setDirty(true);
+  clearSaveStatus();
 });
 
 window.addEventListener("keydown", (event) => {
@@ -202,15 +319,26 @@ window.addEventListener("resize", () => {
   previewController.render();
 });
 
+window.addEventListener("beforeunload", (event) => {
+  if (!isDirty) {
+    return;
+  }
+  event.preventDefault();
+  event.returnValue = "";
+});
+
 bootstrapEditor({
   appHeaderRoot,
   titleNode,
   metaNode,
   blockTypesMenuNode,
   onLogout: logout,
-  onReady: ({ shouldMigrateLocalDraft, saveToDbAvailable, nonBlockingError } = {}) => {
+  onReady: ({ shouldMigrateLocalDraft, saveToDbAvailable: canSaveToDb, nonBlockingError } = {}) => {
     renderMainPanels();
-    saveEnabled = true;
+    saveToDbAvailable = Boolean(canSaveToDb);
+    dirtyTrackingEnabled = true;
+    setDirty(Boolean(shouldMigrateLocalDraft));
+    renderSaveControls();
     if (nonBlockingError && !saveDisabledReasonShown) {
       showError(
         `Блоки БД недоступны (${nonBlockingError}). Редактор работает в локальном режиме.`
@@ -218,7 +346,9 @@ bootstrapEditor({
       saveDisabledReasonShown = true;
     }
     if (shouldMigrateLocalDraft) {
-      scheduleDraftSave();
+      showSaveStatus("Есть локальные изменения - нажмите Сохранить, чтобы записать в БД.");
+    } else {
+      clearSaveStatus();
     }
   }
 }).catch((error) => showError(error.message));

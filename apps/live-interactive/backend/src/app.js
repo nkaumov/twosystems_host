@@ -14,6 +14,7 @@ const authRoutes = require("./modules/auth/auth.routes");
 const presentationsRoutes = require("./modules/presentations/presentations.routes");
 const realtimeRoutes = require("./modules/realtime/realtime.routes");
 const qrRoutes = require("./modules/qr/qr.routes");
+const liveRoutes = require("./modules/live/live.routes");
 
 const app = express();
 const frontendDir = path.resolve(__dirname, "../../frontend");
@@ -39,6 +40,7 @@ app.use("/api/auth", privateNoCache, authRoutes);
 app.use("/api/presentations", privateNoCache, requireApiSession, presentationsRoutes);
 app.use("/api/realtime", privateNoCache, requireApiSession, realtimeRoutes);
 app.use("/api/qr", privateNoCache, qrRoutes);
+app.use("/api", privateNoCache, liveRoutes);
 
 app.get(
   "/",
@@ -75,6 +77,70 @@ app.get(
   privateNoCache,
   requirePageSession,
   (req, res) => res.sendFile(path.join(frontendDir, "pages/editor.html"))
+);
+
+app.get(
+  "/presentations/:id/live",
+  privateNoCache,
+  requirePageSession,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live.html"));
+  }
+);
+
+app.get(
+  "/tv/:token",
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-tv.html"));
+  }
+);
+
+app.get(
+  "/guest/:token",
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-guest.html"));
+  }
+);
+
+app.get(
+  /^\/tv\/.+$/,
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-tv.html"));
+  }
+);
+
+app.get(
+  /^\/guest\/.+$/,
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-guest.html"));
+  }
+);
+
+app.get(
+  "/live/tv/:token",
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-tv.html"));
+  }
+);
+
+app.get(
+  "/live/guest/:token",
+  privateNoCache,
+  (req, res) => {
+    res.type("html");
+    return res.sendFile(path.join(frontendDir, "pages/live-guest.html"));
+  }
 );
 
 app.use(notFoundHandler);

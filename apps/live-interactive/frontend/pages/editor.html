@@ -49,9 +49,16 @@
               class="block-types-menu card motion-popover"
               hidden
             ></div>
-            <button id="toggle-preview-top" type="button" class="btn btn-primary">
+            <button id="editor-live" type="button" class="btn btn-primary">
               Лайв
             </button>
+            <button id="editor-save" type="button" class="btn btn-secondary">
+              Сохранить
+            </button>
+            <span id="editor-dirty-indicator" class="editor-dirty-indicator" hidden>
+              ● Несохранено
+            </span>
+            <span id="editor-save-status" class="muted editor-save-status" hidden></span>
           </div>
           <p class="muted editor-topbar-hint">
             Выберите или создайте блок для настройки.

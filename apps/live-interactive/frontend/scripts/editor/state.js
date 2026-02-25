@@ -3,9 +3,12 @@ import {
   normalizeFlexibleSettings
 } from "./flexible-block.js";
 import { createDefaultQuizSettings, normalizeQuizSettings } from "./quiz-block.js";
+import { getEditorBlockSchemaEntry } from "./schemas/registry.js";
 
 const STORAGE_PREFIX = "li_editor_blocks_";
 const changeListeners = new Set();
+const DEFAULT_SCHEMA_VERSION = 1;
+const DEFAULT_TYPE_VERSION = 1;
 
 export const state = {
   presentation: null,
@@ -31,7 +34,34 @@ function normalizeText(value, fallback = "") {
   return text;
 }
 
-function createDefaultSettingsByType(type) {
+function normalizePositiveInt(value, fallback) {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function resolveBlockVersionDefaults(type) {
+  const schemaEntry = getEditorBlockSchemaEntry(type);
+  const schema = schemaEntry?.schema || {};
+  return {
+    schemaVersion: normalizePositiveInt(schema?.schemaVersion, DEFAULT_SCHEMA_VERSION),
+    typeVersion: normalizePositiveInt(schema?.typeVersion, DEFAULT_TYPE_VERSION)
+  };
+}
+
+function applyVersionDefaults(versionTarget, type) {
+  if (!versionTarget || typeof versionTarget !== "object") {
+    return;
+  }
+  const defaults = resolveBlockVersionDefaults(type);
+  versionTarget.schemaVersion = defaults.schemaVersion;
+  versionTarget.typeVersion = defaults.typeVersion;
+}
+
+function createDefaultSettingsByType(type, versionTarget = null) {
+  applyVersionDefaults(versionTarget, type);
   if (type === "flex") {
     return createDefaultFlexibleSettings();
   }
@@ -41,7 +71,8 @@ function createDefaultSettingsByType(type) {
   return {};
 }
 
-function normalizeSettingsByType(type, rawSettings) {
+function normalizeSettingsByType(type, rawSettings, versionTarget = null) {
+  applyVersionDefaults(versionTarget, type);
   if (type === "flex") {
     return normalizeFlexibleSettings(rawSettings);
   }
@@ -88,13 +119,19 @@ function normalizeBlock(rawBlock) {
   if (!id || !type) {
     return null;
   }
-  const settings = normalizeSettingsByType(type, rawBlock?.settings);
+  const versionDefaults = {
+    schemaVersion: DEFAULT_SCHEMA_VERSION,
+    typeVersion: DEFAULT_TYPE_VERSION
+  };
+  const settings = normalizeSettingsByType(type, rawBlock?.settings, versionDefaults);
   return {
     id,
     type,
     title,
     note,
     createdAt,
+    schemaVersion: normalizePositiveInt(rawBlock?.schemaVersion, versionDefaults.schemaVersion),
+    typeVersion: normalizePositiveInt(rawBlock?.typeVersion, versionDefaults.typeVersion),
     settings
   };
 }
@@ -187,13 +224,19 @@ export function selectBlock(blockId) {
 
 export function addBlock({ type, title, note }) {
   const normalizedType = String(type || "").trim();
+  const versionDefaults = {
+    schemaVersion: DEFAULT_SCHEMA_VERSION,
+    typeVersion: DEFAULT_TYPE_VERSION
+  };
   const block = {
     id: `b${nextLocalId++}`,
     type: normalizedType,
     title: normalizeText(title, "Новый блок"),
     note: String(note || "").trim(),
     createdAt: new Date().toISOString(),
-    settings: createDefaultSettingsByType(normalizedType)
+    schemaVersion: versionDefaults.schemaVersion,
+    typeVersion: versionDefaults.typeVersion,
+    settings: createDefaultSettingsByType(normalizedType, versionDefaults)
   };
 
   state.blocks = [...state.blocks, block];
@@ -211,12 +254,26 @@ export function updateSelectedBlock(patch) {
     if (item.id !== state.selectedBlockId) {
       return item;
     }
+    const nextType = String(patch?.type ?? item.type ?? "").trim() || item.type;
+    const versionDefaults = resolveBlockVersionDefaults(nextType);
     return {
       ...item,
       ...patch,
-      title: normalizeText(patch?.title ?? item.title, "Новый блок"),
+      type: nextType,
+      title: normalizeText(
+        patch?.title ?? item.title,
+        "\u041d\u043e\u0432\u044b\u0439 \u0431\u043b\u043e\u043a"
+      ),
       note: String(patch?.note ?? (item.note || "")).trim(),
-      settings: normalizeSettingsByType(item.type, patch?.settings ?? item.settings)
+      schemaVersion: normalizePositiveInt(
+        patch?.schemaVersion ?? item.schemaVersion,
+        versionDefaults.schemaVersion
+      ),
+      typeVersion: normalizePositiveInt(
+        patch?.typeVersion ?? item.typeVersion,
+        versionDefaults.typeVersion
+      ),
+      settings: normalizeSettingsByType(nextType, patch?.settings ?? item.settings, versionDefaults)
     };
   });
   persistDraft();

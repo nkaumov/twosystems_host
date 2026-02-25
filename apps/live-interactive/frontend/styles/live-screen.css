@@ -1,0 +1,85 @@
+﻿.live-screen {
+  width: min(980px, calc(100% - 2rem));
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.live-screen h1 {
+  margin: 0;
+}
+
+.live-screen-pre {
+  margin: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-height: 280px;
+  background: #f8fbf9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: auto;
+}
+
+.live-screen-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: #fbfdfc;
+}
+
+.live-screen-card h2 {
+  margin: 0 0 0.5rem;
+}
+
+.live-screen-subtitle {
+  margin: 0.8rem 0 0.35rem;
+}
+
+.live-screen-list {
+  margin: 0.35rem 0 0.2rem 1.1rem;
+  padding: 0;
+}
+
+.live-screen-list li {
+  margin: 0.25rem 0;
+}
+
+.live-screen-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.live-screen-row .input {
+  flex: 1;
+}
+
+.guest-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guest-option-btn {
+  justify-content: flex-start;
+}
+
+.guest-text-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.guest-text-row .input {
+  flex: 1;
+}
+
+@media (max-width: 700px) {
+  .live-screen-row,
+  .guest-text-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
